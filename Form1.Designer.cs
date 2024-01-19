@@ -62,7 +62,8 @@
             // 
             // panel1
             // 
-            panel1.BackColor = Color.Gainsboro;
+            panel1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            panel1.BackColor = Color.Brown;
             panel1.Controls.Add(lstViewDirsFiles);
             panel1.Controls.Add(txtFileName);
             panel1.Controls.Add(trvDirs);

@@ -1,13 +1,57 @@
+using System.IO;
+using System.Runtime.InteropServices;
+
 namespace ExplorerKA
 {
     public partial class Form1 : Form
     {
+        [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, ref SHFILEINFO psfi, uint cbFileInfo, uint uFlags);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        public struct SHFILEINFO
+        {
+            public IntPtr hIcon;
+            public int iIcon;
+            public uint dwAttributes;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+            public string szDisplayName;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
+            public string szTypeName;
+        }
+
+        private const uint SHGFI_ICON = 0x100;
+        private const uint SHGFI_SMALLICON = 0x1;
+        private const uint SHGFI_LARGEICON = 0x0;
+
+        private ImageList imageList;
+
+
         public Form1()
         {
             InitializeComponent();
+            InitializeImageList();
+            InitializeListView();
             txtFileName.Text = "c:\\"; //TEST
             PopulateTreeView();
         }
+
+        private void InitializeImageList()
+        {
+            imageList = new ImageList();
+            imageList.ImageSize = new Size(32, 32); // Set the desired icon size
+            imageList.ColorDepth = ColorDepth.Depth32Bit;
+            lstViewDirsFiles.SmallImageList = imageList;
+        }
+
+        private void InitializeListView()
+        {
+            lstViewDirsFiles.View = View.Details;
+            lstViewDirsFiles.Columns.Add("Name", 150); // Column for file/folder name
+            lstViewDirsFiles.Columns.Add("Size", 100); // Column for file size
+            lstViewDirsFiles.Columns.Add("Last Modified", 150); // Column for last modified timestamp
+        }
+
 
 
         private void PopulateTreeView()
@@ -76,6 +120,9 @@ namespace ExplorerKA
                     item.SubItems.Add("Folder"); // Indicate that it's a folder
                     item.SubItems.Add(subDirectory.LastWriteTime.ToString()); // Last write time
                     item.Tag = subDirectory; // Store the DirectoryInfo object for later use
+                    var icon = GetFileIcon(subDirectory.FullName);// Get the icon for the file
+                    imageList.Images.Add(icon);
+                    item.ImageIndex = imageList.Images.Count - 1;
                     lstViewDirsFiles.Items.Add(item);
                 }
 
@@ -85,6 +132,9 @@ namespace ExplorerKA
                     item.SubItems.Add(file.Length.ToString()); // File size
                     item.SubItems.Add(file.LastWriteTime.ToString()); // Last write time
                     item.Tag = file; // Store the FileInfo object for later use
+                    var icon = GetFileIcon(file.FullName);// Get the icon for the file
+                    imageList.Images.Add(icon);
+                    item.ImageIndex = imageList.Images.Count - 1;
                     lstViewDirsFiles.Items.Add(item);
                 }
             }
@@ -92,8 +142,11 @@ namespace ExplorerKA
             {
                 // Handle unauthorized access (e.g., access denied to a file or folder)
             }
+            catch (System.IO.IOException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
-
 
 
         private void trvDirs_AfterSelect(object sender, TreeViewEventArgs e)
@@ -105,6 +158,18 @@ namespace ExplorerKA
                 //PopulateFiles(directory);
                 PopulateFilesAndDirectories(directory);
             }
+        }
+
+        private Icon GetFileIcon(string filePath)
+        {
+            SHFILEINFO shinfo = new SHFILEINFO();
+            IntPtr hImg = SHGetFileInfo(filePath, 0, ref shinfo, (uint)Marshal.SizeOf(shinfo), SHGFI_ICON | SHGFI_SMALLICON);
+            if (hImg == IntPtr.Zero)
+            {
+                throw new FileNotFoundException("Icon not found");
+            }
+            Icon icon = Icon.FromHandle(shinfo.hIcon);
+            return icon;
         }
     }
 }
