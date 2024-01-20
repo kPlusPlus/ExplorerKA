@@ -32,7 +32,6 @@ namespace ExplorerKA
             InitializeComponent();
             InitializeImageList();
             InitializeListView();
-            txtFileName.Text = "c:\\"; //TEST
             PopulateTreeView();
         }
 
@@ -157,6 +156,7 @@ namespace ExplorerKA
                 txtFileName.Text = directory.FullName;
                 //PopulateFiles(directory);
                 PopulateFilesAndDirectories(directory);
+                trvDirs.SelectedNode = selectedNode;
             }
         }
 
@@ -170,6 +170,22 @@ namespace ExplorerKA
             }
             Icon icon = Icon.FromHandle(shinfo.hIcon);
             return icon;
+        }
+
+
+        private void lstViewDirsFiles_DoubleClick(object sender, EventArgs e)
+        {
+            if (lstViewDirsFiles.SelectedItems.Count > 0)
+            {
+                var selectedItem = lstViewDirsFiles.SelectedItems[0];
+                DirectoryInfo di = selectedItem.Tag as DirectoryInfo;
+
+                if (di != null) {                    
+                    PopulateFilesAndDirectories(di);
+                    txtFileName.Text = di.FullName;
+                }                
+            }
+
         }
     }
 }

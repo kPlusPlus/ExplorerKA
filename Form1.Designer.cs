@@ -59,6 +59,7 @@
             lstViewDirsFiles.TabIndex = 2;
             lstViewDirsFiles.UseCompatibleStateImageBehavior = false;
             lstViewDirsFiles.View = View.List;
+            lstViewDirsFiles.DoubleClick += lstViewDirsFiles_DoubleClick;
             // 
             // panel1
             // 
