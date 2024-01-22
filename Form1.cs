@@ -24,7 +24,8 @@ namespace ExplorerKA
         private const uint SHGFI_SMALLICON = 0x1;
         private const uint SHGFI_LARGEICON = 0x0;
 
-        private ImageList imageList;
+        private ImageList imageList; // Icon of file
+        private TreeNode selectedNode; // tree of directory
 
 
         public Form1()
@@ -147,10 +148,10 @@ namespace ExplorerKA
             }
         }
 
-
+        
         private void trvDirs_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            var selectedNode = e.Node;
+            selectedNode = e.Node;
             if (selectedNode != null && selectedNode.Tag is DirectoryInfo directory)
             {
                 txtFileName.Text = directory.FullName;
@@ -182,6 +183,7 @@ namespace ExplorerKA
 
                 if (di != null) {                    
                     PopulateFilesAndDirectories(di);
+                    PopulateDirectories(di, selectedNode);
                     txtFileName.Text = di.FullName;
                 }                
             }
