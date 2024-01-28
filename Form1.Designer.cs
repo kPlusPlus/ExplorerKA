@@ -28,11 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             txtFileName = new TextBox();
             trvDirs = new TreeView();
             lstViewDirsFiles = new ListView();
             panel1 = new Panel();
+            contextMenuStrip1 = new ContextMenuStrip(components);
+            tsmOpen = new ToolStripMenuItem();
             panel1.SuspendLayout();
+            contextMenuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // txtFileName
@@ -77,6 +81,19 @@
             panel1.Size = new Size(1269, 842);
             panel1.TabIndex = 3;
             // 
+            // contextMenuStrip1
+            // 
+            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { tsmOpen });
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.Size = new Size(181, 48);
+            // 
+            // tsmOpen
+            // 
+            tsmOpen.Name = "tsmOpen";
+            tsmOpen.Size = new Size(180, 22);
+            tsmOpen.Text = "Open";
+            tsmOpen.Click += tsmOpen_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -87,6 +104,7 @@
             Text = "Form1";
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -95,5 +113,7 @@
         private TreeView trvDirs;
         private ListView lstViewDirsFiles;
         private Panel panel1;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem tsmOpen;
     }
 }

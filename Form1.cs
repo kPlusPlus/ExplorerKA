@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -47,9 +48,11 @@ namespace ExplorerKA
         private void InitializeListView()
         {
             lstViewDirsFiles.View = View.Details;
-            lstViewDirsFiles.Columns.Add("Name", 150); // Column for file/folder name
+            lstViewDirsFiles.Columns.Add("Name", 150); // Column for file/folder namewq
             lstViewDirsFiles.Columns.Add("Size", 100); // Column for file size
             lstViewDirsFiles.Columns.Add("Last Modified", 150); // Column for last modified timestamp
+
+            lstViewDirsFiles.ContextMenuStrip = contextMenuStrip1;
         }
 
 
@@ -148,7 +151,7 @@ namespace ExplorerKA
             }
         }
 
-        
+
         private void trvDirs_AfterSelect(object sender, TreeViewEventArgs e)
         {
             selectedNode = e.Node;
@@ -181,13 +184,31 @@ namespace ExplorerKA
                 var selectedItem = lstViewDirsFiles.SelectedItems[0];
                 DirectoryInfo di = selectedItem.Tag as DirectoryInfo;
 
-                if (di != null) {                    
+                if (di != null)
+                {
                     PopulateFilesAndDirectories(di);
                     PopulateDirectories(di, selectedNode);
                     txtFileName.Text = di.FullName;
-                }                
+                }
             }
 
+        }
+
+        private void tsmOpen_Click(object sender, EventArgs e)
+        {
+            if(lstViewDirsFiles.SelectedItems.Count > 0)
+            {
+                ListViewItem item = lstViewDirsFiles.SelectedItems[0];
+                object obj = item.Tag;
+                FileInfo fileInfo = (FileInfo)obj;                
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = fileInfo.FullName.ToString(),
+                    UseShellExecute = true
+                };
+
+                Process.Start(psi);
+            }
         }
     }
 }
