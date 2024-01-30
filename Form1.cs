@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.InteropServices;
 
 namespace ExplorerKA
@@ -27,6 +28,7 @@ namespace ExplorerKA
 
         private ImageList imageList; // Icon of file
         private TreeNode selectedNode; // tree of directory
+        private DirectoryInfo directoryInfo;
 
 
         public Form1()
@@ -161,6 +163,7 @@ namespace ExplorerKA
                 //PopulateFiles(directory);
                 PopulateFilesAndDirectories(directory);
                 trvDirs.SelectedNode = selectedNode;
+                directoryInfo = new DirectoryInfo(directory.FullName); // to variable
             }
         }
 
@@ -189,6 +192,7 @@ namespace ExplorerKA
                     PopulateFilesAndDirectories(di);
                     PopulateDirectories(di, selectedNode);
                     txtFileName.Text = di.FullName;
+                    directoryInfo = di;
                 }
             }
 
@@ -196,11 +200,11 @@ namespace ExplorerKA
 
         private void tsmOpen_Click(object sender, EventArgs e)
         {
-            if(lstViewDirsFiles.SelectedItems.Count > 0)
+            if (lstViewDirsFiles.SelectedItems.Count > 0)
             {
                 ListViewItem item = lstViewDirsFiles.SelectedItems[0];
                 object obj = item.Tag;
-                FileInfo fileInfo = (FileInfo)obj;                
+                FileInfo fileInfo = (FileInfo)obj;
                 ProcessStartInfo psi = new ProcessStartInfo
                 {
                     FileName = fileInfo.FullName.ToString(),
@@ -210,5 +214,55 @@ namespace ExplorerKA
                 Process.Start(psi);
             }
         }
+
+        private void tsmCompress_Click(object sender, EventArgs e)
+        {
+            if (lstViewDirsFiles.SelectedItems.Count > 0)
+            {
+                ListViewItem item = lstViewDirsFiles.SelectedItems[0];
+                object obj = item.Tag;
+                FileInfo fileInfo = (FileInfo)obj;
+                string fileName = fileInfo.FullName.ToString();
+                CompressFileZIP(fileName, fileName + ".gzip");
+                MessageBox.Show(" File is compressed " + fileName);
+
+                PopulateFilesAndDirectories(directoryInfo);
+            }
+        }
+
+        public static void CompressFile(string sourceFilePath, string compressedFilePath)
+        {
+            // Create a new compressed file
+            using (FileStream sourceFile = File.OpenRead(sourceFilePath))
+            {
+                using (FileStream compressedFile = File.Create(compressedFilePath))
+                {
+                    using (GZipStream compressionStream = new GZipStream(compressedFile, CompressionMode.Compress))
+                    {
+                        // Copy the source file to the compressed file
+                        sourceFile.CopyTo(compressionStream);
+                    }
+                }
+            }
+        }
+
+        public static void CompressFileZIP(string sourceFilePath, string compressedFilePath)
+        {
+            using (ZipArchive archive = new ZipArchive(File.Open(compressedFilePath, FileMode.Create), ZipArchiveMode.Create))
+            {
+                ZipArchiveEntry entry = archive.CreateEntry(sourceFilePath);
+
+                using (Stream entryStream = entry.Open())
+                {
+                    using (StreamWriter writer = new StreamWriter(entryStream))
+                    {
+                        writer.Write(File.ReadAllText(sourceFilePath));
+                    }
+                }
+            }
+
+        }
+
+
     }
 }

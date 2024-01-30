@@ -1,7 +1,14 @@
 ﻿
 
-ToDo 1:
-napravi da kontrole unutar panela su resize sa cijelom formom
+ToDo: 1
++++ 	napravi da kontrole unutar panela su resize sa cijelom formom
 
-ToDo 2:
-napravi da se može kretati po subfolders
+ToDo: 2
++++		napravi da se može kretati po subfolders
+
+ToDo: 3
+nakon compress treba refresh tog foldera
+	staviti private CurrentDirectory [directoryInfo]
+
+ToDo: 4
+sve pomoćne funkcije prebaci u common.dll
