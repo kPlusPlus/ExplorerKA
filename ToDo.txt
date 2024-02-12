@@ -10,5 +10,10 @@ ToDo: 3
 nakon compress treba refresh tog foldera
 	staviti private CurrentDirectory [directoryInfo]
 
+ToDo: 3.1
+	compress directory-ies
+	compress files
+	compress directories & files
+
 ToDo: 4
 sve pomoćne funkcije prebaci u common.dll

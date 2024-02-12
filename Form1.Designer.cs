@@ -62,6 +62,7 @@
             // 
             lstViewDirsFiles.AllowColumnReorder = true;
             lstViewDirsFiles.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            lstViewDirsFiles.ContextMenuStrip = contextMenuStrip1;
             lstViewDirsFiles.Location = new Point(390, 32);
             lstViewDirsFiles.Name = "lstViewDirsFiles";
             lstViewDirsFiles.Size = new Size(876, 807);
@@ -86,19 +87,19 @@
             // 
             contextMenuStrip1.Items.AddRange(new ToolStripItem[] { tsmOpen, tsmCompress });
             contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new Size(181, 70);
+            contextMenuStrip1.Size = new Size(128, 48);
             // 
             // tsmOpen
             // 
             tsmOpen.Name = "tsmOpen";
-            tsmOpen.Size = new Size(180, 22);
+            tsmOpen.Size = new Size(127, 22);
             tsmOpen.Text = "Open";
             tsmOpen.Click += tsmOpen_Click;
             // 
             // tsmCompress
             // 
             tsmCompress.Name = "tsmCompress";
-            tsmCompress.Size = new Size(180, 22);
+            tsmCompress.Size = new Size(127, 22);
             tsmCompress.Text = "Compress";
             tsmCompress.Click += tsmCompress_Click;
             // 

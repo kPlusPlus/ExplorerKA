@@ -6,9 +6,17 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="7-Zip.x64" Version="16.2.1" />
+    <PackageReference Include="SevenZipSharp" Version="0.64">
+      <GeneratePathProperty>True</GeneratePathProperty>
+    </PackageReference>
+    <PackageReference Include="SevenZipSharp.Interop" Version="19.1.0">
+      <GeneratePathProperty>True</GeneratePathProperty>
+    </PackageReference>
     <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
     <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
   </ItemGroup>
