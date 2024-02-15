@@ -5,6 +5,7 @@ using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using SevenZip;
 using SevenZip.Sdk.Compression.Lzma;
+using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 
 
@@ -237,9 +238,11 @@ namespace ExplorerKA
                         //CreateZip(fileName, "TESTAAA.zip");
                         AddFilesToZip("TESLAAA.zip", fileName);
                     }
-                    DirectoryInfo di = obj as DirectoryInfo; 
-                    if (di != null) { 
-
+                    if (obj != null)
+                    {
+                        DirectoryInfo di = obj as DirectoryInfo;
+                        if(di != null)  CreateZipDir(di.FullName, "TESTAAA.zip");
+                     
                     }
                 }
                 /*
@@ -332,6 +335,13 @@ namespace ExplorerKA
             }
             //Console.WriteLine($"Files added to {zipFilePath}");
             MessageBox.Show($"Files added to {zipFilePath}");
+        }
+
+        // Create a zip archive from a directory
+        public static void CreateZipDir(string sourceDir, string zipFilePath)
+        {
+                //TODO: pronaði riješenje da zazipaš folder
+                ZipFile.CreateFromDirectory(sourceDir, zipFilePath, CompressionLevel.Optimal, includeBaseDirectory: true);
         }
 
 
