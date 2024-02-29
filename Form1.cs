@@ -267,8 +267,8 @@ namespace ExplorerKA
             {
                 // If input is a file, use built-in .NET compression
                 using (FileStream inputStream = File.OpenRead(inputPath))
-                using (FileStream outputStream = File.Create(outputPath))
-                using (GZipStream compressionStream = new GZipStream(outputStream, CompressionLevel.Optimal))
+                using (FileStream outputStream = File.Create(outputPath)) //TODO: create or append
+                using (GZipStream compressionStream = new GZipStream(outputStream, CompressionLevel.SmallestSize))
                 {
                     inputStream.CopyTo(compressionStream);
                 }
