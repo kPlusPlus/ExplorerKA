@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
+using ICSharpCode.SharpZipLib.Zip;
 using SevenZip;
 using SevenZip.Sdk.Compression.Lzma;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
@@ -233,117 +234,81 @@ namespace ExplorerKA
                     if (fileInfo != null)
                     {
                         string fileName = fileInfo.FullName.ToString();
-                        //CompressFileZIP(fileName, fileName + ".zip");
-                        //CompressFileZIP(fileName, "TESTAAA.zip");
-                        //CreateZip(fileName, "TESTAAA.zip");
-                        AddFilesToZip("TESLAAA.zip", fileName);
+
+                        Compress("TESLAAA.zip", fileName);
                     }
                     if (obj != null)
                     {
                         DirectoryInfo di = obj as DirectoryInfo;
-                        if(di != null)  CreateZipDir(di.FullName, "TESTAAA.zip");
+                        if(di != null)  Compress(di.FullName, "TESTAAA.zip");
                      
                     }
                 }
-                /*
-                ListViewItem item = lstViewDirsFiles.SelectedItems[0];
-                object obj = item.Tag;
-                FileInfo fileInfo = (FileInfo)obj;
-                string fileName = fileInfo.FullName.ToString();
-                
-                CompressFileZIP(fileName, fileName + ".zip");
-                //CompressFileGZIP(fileName, fileName + ".gzip");                
-                //CompressFile7ZIP(fileName, fileName + ".7z"); // ne koristim                
-                //CompressFileLZMA(fileName, fileName + ".7z");
-                MessageBox.Show(" File is compressed " + fileName);
-                */
 
                 PopulateFilesAndDirectories(directoryInfo);
             }
         }
 
-        public static void CompressFileGZIP(string sourceFilePath, string compressedFilePath)
+
+        static void Compress(string inputPath, string outputPath)
         {
-            // Create a new compressed file
-            using (FileStream sourceFile = File.OpenRead(sourceFilePath))
+            if (Directory.Exists(inputPath))
             {
-                using (FileStream compressedFile = File.Create(compressedFilePath))
+                // If input is a folder, use SharpZipLib to compress
+                using (FileStream outputStream = File.Create(outputPath))
+                using (ZipOutputStream zipStream = new ZipOutputStream(outputStream))
                 {
-                    using (GZipStream compressionStream = new GZipStream(compressedFile, System.IO.Compression.CompressionMode.Compress))
-                    {
-                        // Copy the source file to the compressed file
-                        sourceFile.CopyTo(compressionStream);
-                    }
+                    zipStream.SetLevel(9); // Set compression level to maximum
+
+                    CompressFolder(inputPath, zipStream, "");
                 }
+            }
+            else if (File.Exists(inputPath))
+            {
+                // If input is a file, use built-in .NET compression
+                using (FileStream inputStream = File.OpenRead(inputPath))
+                using (FileStream outputStream = File.Create(outputPath))
+                using (GZipStream compressionStream = new GZipStream(outputStream, CompressionLevel.Optimal))
+                {
+                    inputStream.CopyTo(compressionStream);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Input path does not exist.");
             }
         }
 
-        public static void CompressFileZIP(string sourceFilePath, string compressedFilePath)
+        static void CompressFolder(string folderPath, ZipOutputStream zipStream, string parentFolder)
         {
-            using (ZipArchive archive = new ZipArchive(File.Open(compressedFilePath, FileMode.Create), ZipArchiveMode.Create))
+            string[] files = Directory.GetFiles(folderPath);
+            foreach (string filePath in files)
             {
-                ZipArchiveEntry entry = archive.CreateEntry(sourceFilePath, System.IO.Compression.CompressionLevel.SmallestSize);
+                string relativePath = Path.Combine(parentFolder, Path.GetFileName(filePath));
+                AddFileToZip(zipStream, filePath, relativePath);
+            }
 
-                using (Stream entryStream = entry.Open())
-                {
-                    using (StreamWriter writer = new StreamWriter(entryStream))
-                    {
-                        writer.Write(File.ReadAllText(sourceFilePath));
-                    }
-                }
+            string[] folders = Directory.GetDirectories(folderPath);
+            foreach (string folder in folders)
+            {
+                string folderName = Path.GetFileName(folder);
+                string relativePath = Path.Combine(parentFolder, folderName + "/");
+                CompressFolder(folder, zipStream, relativePath);
             }
         }
 
-        public static void CompressFile7ZIP(string sourceFilePath, string compressedFilePath)
+        static void AddFileToZip(ZipOutputStream zipStream, string filePath, string relativePath)
         {
-            SevenZipCompressor.SetLibraryPath(@"C:\Program Files\7-Zip\7z.dll");
-            SevenZipCompressor compressor = new SevenZipCompressor();
-            compressor.CompressionMode = SevenZip.CompressionMode.Create; // CompressionMode.Create;
-            compressor.TempFolderPath = Path.GetTempPath();
-            compressor.ArchiveFormat = OutArchiveFormat.SevenZip;            
-            compressor.CompressFiles(compressedFilePath,sourceFilePath);
-        }
+            ZipEntry entry = new ZipEntry(relativePath);
+            zipStream.PutNextEntry(entry);
 
-
-        private static void CompressFileLZMA(string inFile, string outFile)
-        {            
-            SevenZipCompressor.SetLibraryPath(@"C:\Program Files\7-Zip\7z.dll");
-            SevenZipCompressor compressor = new SevenZipCompressor();
-            compressor.CompressionMode = SevenZip.CompressionMode.Create;
-            compressor.TempFolderPath = Path.GetTempPath();
-            compressor.ArchiveFormat = OutArchiveFormat.SevenZip;
-            compressor.CompressionLevel = SevenZip.CompressionLevel.High;
-            compressor.CompressionMethod = SevenZip.CompressionMethod.Lzma2;
-            compressor.CompressFiles(outFile, inFile);
-        }
-
-        public void CreateZip(string sourceDir, string zipFilePath)
-        {
-            //ZipFile.CreateFromDirectory(sourceDir, zipFilePath);
-            ZipFile.CreateFromDirectory(sourceDir, zipFilePath,System.IO.Compression.CompressionLevel.SmallestSize,false);
-        }
-
-        // Add files to an existing zip archive
-        public static void AddFilesToZip(string zipFilePath, params string[] filesToAdd)
-        {
-            using (ZipArchive archive = ZipFile.Open(zipFilePath, ZipArchiveMode.Update))
+            using (FileStream fileStream = File.OpenRead(filePath))
             {
-                foreach (string fileToAdd in filesToAdd)
-                {
-                    archive.CreateEntryFromFile(fileToAdd, Path.GetFileName(fileToAdd));
-                }
+                fileStream.CopyTo(zipStream);
             }
-            //Console.WriteLine($"Files added to {zipFilePath}");
-            MessageBox.Show($"Files added to {zipFilePath}");
-        }
 
-        // Create a zip archive from a directory
-        public static void CreateZipDir(string sourceDir, string zipFilePath)
-        {
-                //TODO: pronaði riješenje da zazipaš folder
-                ZipFile.CreateFromDirectory(sourceDir, zipFilePath, CompressionLevel.Optimal, includeBaseDirectory: true);
+            zipStream.CloseEntry();
         }
-
 
 
     }
