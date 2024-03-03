@@ -32,12 +32,12 @@
             txtFileName = new TextBox();
             trvDirs = new TreeView();
             lstViewDirsFiles = new ListView();
-            panel1 = new Panel();
             contextMenuStrip1 = new ContextMenuStrip(components);
             tsmOpen = new ToolStripMenuItem();
             tsmCompress = new ToolStripMenuItem();
-            panel1.SuspendLayout();
+            panel1 = new Panel();
             contextMenuStrip1.SuspendLayout();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // txtFileName
@@ -52,6 +52,8 @@
             // 
             trvDirs.AllowDrop = true;
             trvDirs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            trvDirs.BackColor = Color.MidnightBlue;
+            trvDirs.ForeColor = Color.Yellow;
             trvDirs.Location = new Point(3, 32);
             trvDirs.Name = "trvDirs";
             trvDirs.Size = new Size(381, 807);
@@ -62,7 +64,9 @@
             // 
             lstViewDirsFiles.AllowColumnReorder = true;
             lstViewDirsFiles.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            lstViewDirsFiles.BackColor = Color.MidnightBlue;
             lstViewDirsFiles.ContextMenuStrip = contextMenuStrip1;
+            lstViewDirsFiles.ForeColor = Color.Yellow;
             lstViewDirsFiles.Location = new Point(390, 32);
             lstViewDirsFiles.Name = "lstViewDirsFiles";
             lstViewDirsFiles.Size = new Size(876, 807);
@@ -70,18 +74,6 @@
             lstViewDirsFiles.UseCompatibleStateImageBehavior = false;
             lstViewDirsFiles.View = View.List;
             lstViewDirsFiles.DoubleClick += lstViewDirsFiles_DoubleClick;
-            // 
-            // panel1
-            // 
-            panel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            panel1.BackColor = Color.Brown;
-            panel1.Controls.Add(lstViewDirsFiles);
-            panel1.Controls.Add(txtFileName);
-            panel1.Controls.Add(trvDirs);
-            panel1.Location = new Point(12, 12);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(1269, 842);
-            panel1.TabIndex = 3;
             // 
             // contextMenuStrip1
             // 
@@ -103,6 +95,18 @@
             tsmCompress.Text = "Compress";
             tsmCompress.Click += tsmCompress_Click;
             // 
+            // panel1
+            // 
+            panel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            panel1.BackColor = Color.Brown;
+            panel1.Controls.Add(lstViewDirsFiles);
+            panel1.Controls.Add(txtFileName);
+            panel1.Controls.Add(trvDirs);
+            panel1.Location = new Point(12, 12);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(1269, 842);
+            panel1.TabIndex = 3;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -111,9 +115,9 @@
             Controls.Add(panel1);
             Name = "Form1";
             Text = "Form1";
+            contextMenuStrip1.ResumeLayout(false);
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
-            contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
         }
 

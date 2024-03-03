@@ -4,8 +4,8 @@ using System.IO.Compression;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using ICSharpCode.SharpZipLib.Zip;
-using SevenZip;
-using SevenZip.Sdk.Compression.Lzma;
+//using SevenZip;
+//using SevenZip.Sdk.Compression.Lzma;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 
@@ -233,9 +233,8 @@ namespace ExplorerKA
                     FileInfo fileInfo = obj as FileInfo;
                     if (fileInfo != null)
                     {
-                        string fileName = fileInfo.FullName.ToString();
-
-                        Compress("TESLAAA.zip", fileName);
+                        string fileName = fileInfo.FullName.ToString();                        
+                        Compress(fileName, "TESLAAA.zip");
                     }
                     if (obj != null)
                     {
@@ -265,6 +264,16 @@ namespace ExplorerKA
             }
             else if (File.Exists(inputPath))
             {
+                if (File.Exists(outputPath)) // if zip already exists
+                {
+                    using (System.IO.Compression.ZipArchive archive = System.IO.Compression.ZipFile.Open(outputPath, ZipArchiveMode.Update))
+                    {
+                        archive.CreateEntryFromFile(inputPath, Path.GetFileName(inputPath),CompressionLevel.SmallestSize);
+                        return;
+                    }
+                }
+
+                /*
                 // If input is a file, use built-in .NET compression
                 using (FileStream inputStream = File.OpenRead(inputPath))
                 using (FileStream outputStream = File.Create(outputPath)) //TODO: create or append
@@ -272,6 +281,14 @@ namespace ExplorerKA
                 {
                     inputStream.CopyTo(compressionStream);
                 }
+                */
+
+                using (System.IO.Compression.ZipArchive archive = System.IO.Compression.ZipFile.Open(outputPath, ZipArchiveMode.Update))
+                {
+                    archive.CreateEntryFromFile(inputPath, Path.GetFileName(inputPath), CompressionLevel.SmallestSize);
+                    return;
+                }
+
             }
             else
             {

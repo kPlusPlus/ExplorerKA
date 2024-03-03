@@ -9,6 +9,6 @@
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
 
----------------------------------
-Simple File Explorer		0.001
----------------------------------
+-----------------------------------
+- Simple File Explorer		0.001 -
+-----------------------------------
