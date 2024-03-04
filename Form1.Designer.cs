@@ -36,6 +36,7 @@
             tsmOpen = new ToolStripMenuItem();
             tsmCompress = new ToolStripMenuItem();
             panel1 = new Panel();
+            tsmRefresh = new ToolStripMenuItem();
             contextMenuStrip1.SuspendLayout();
             panel1.SuspendLayout();
             SuspendLayout();
@@ -77,21 +78,21 @@
             // 
             // contextMenuStrip1
             // 
-            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { tsmOpen, tsmCompress });
+            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { tsmOpen, tsmCompress, tsmRefresh });
             contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new Size(128, 48);
+            contextMenuStrip1.Size = new Size(181, 92);
             // 
             // tsmOpen
             // 
             tsmOpen.Name = "tsmOpen";
-            tsmOpen.Size = new Size(127, 22);
+            tsmOpen.Size = new Size(180, 22);
             tsmOpen.Text = "Open";
             tsmOpen.Click += tsmOpen_Click;
             // 
             // tsmCompress
             // 
             tsmCompress.Name = "tsmCompress";
-            tsmCompress.Size = new Size(127, 22);
+            tsmCompress.Size = new Size(180, 22);
             tsmCompress.Text = "Compress";
             tsmCompress.Click += tsmCompress_Click;
             // 
@@ -106,6 +107,12 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(1269, 842);
             panel1.TabIndex = 3;
+            // 
+            // tsmRefresh
+            // 
+            tsmRefresh.Name = "tsmRefresh";
+            tsmRefresh.Size = new Size(180, 22);
+            tsmRefresh.Text = "Refresh";
             // 
             // Form1
             // 
@@ -129,5 +136,6 @@
         private ContextMenuStrip contextMenuStrip1;
         private ToolStripMenuItem tsmOpen;
         private ToolStripMenuItem tsmCompress;
+        private ToolStripMenuItem tsmRefresh;
     }
 }

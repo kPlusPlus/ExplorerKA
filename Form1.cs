@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Net.NetworkInformation;
+//using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using ICSharpCode.SharpZipLib.Zip;
 //using SevenZip;
@@ -73,7 +73,9 @@ namespace ExplorerKA
                 TreeNode driveNode = new TreeNode(drive.Name);
                 driveNode.Tag = drive.RootDirectory;
                 trvDirs.Nodes.Add(driveNode);
+
                 //PopulateDirectories(drive.RootDirectory, driveNode);
+                PopulateFilesAndDirectories(drive.RootDirectory);
             }
         }
 
@@ -126,6 +128,8 @@ namespace ExplorerKA
 
             try
             {
+                if (trvDirs.SelectedNode != null) PopulateDirectories(directory, trvDirs.SelectedNode); //TODO: TEST TEST TEST
+
                 foreach (var subDirectory in directory.GetDirectories())
                 {
                     var item = new ListViewItem(subDirectory.Name);
@@ -150,9 +154,10 @@ namespace ExplorerKA
                     lstViewDirsFiles.Items.Add(item);
                 }
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException uex)
             {
                 // Handle unauthorized access (e.g., access denied to a file or folder)
+                Debug.WriteLine(uex.Message);
             }
             catch (System.IO.IOException ex)
             {
@@ -168,7 +173,8 @@ namespace ExplorerKA
             {
                 txtFileName.Text = directory.FullName;
                 //PopulateFiles(directory);
-                PopulateFilesAndDirectories(directory);
+                //PopulateFilesAndDirectories(directory);
+                PopulateFilesAndDirectories(directory); //TODO: TEST TEST TEST
                 trvDirs.SelectedNode = selectedNode;
                 directoryInfo = new DirectoryInfo(directory.FullName); // to variable
             }
@@ -253,15 +259,9 @@ namespace ExplorerKA
         {
             if (Directory.Exists(inputPath))
             {
-                // If input is a folder, use SharpZipLib to compress
-                using (FileStream outputStream = File.Create(outputPath))
-                using (ZipOutputStream zipStream = new ZipOutputStream(outputStream))
-                {
-                    zipStream.SetLevel(9); // Set compression level to maximum
-
-                    CompressFolder(inputPath, zipStream, "");
-                }
+                System.IO.Compression.ZipFile.CreateFromDirectory(inputPath, outputPath);
             }
+
             else if (File.Exists(inputPath))
             {
                 if (File.Exists(outputPath)) // if zip already exists
@@ -271,17 +271,7 @@ namespace ExplorerKA
                         archive.CreateEntryFromFile(inputPath, Path.GetFileName(inputPath),CompressionLevel.SmallestSize);
                         return;
                     }
-                }
-
-                /*
-                // If input is a file, use built-in .NET compression
-                using (FileStream inputStream = File.OpenRead(inputPath))
-                using (FileStream outputStream = File.Create(outputPath)) //TODO: create or append
-                using (GZipStream compressionStream = new GZipStream(outputStream, CompressionLevel.SmallestSize))
-                {
-                    inputStream.CopyTo(compressionStream);
-                }
-                */
+                }               
 
                 using (System.IO.Compression.ZipArchive archive = System.IO.Compression.ZipFile.Open(outputPath, ZipArchiveMode.Update))
                 {
