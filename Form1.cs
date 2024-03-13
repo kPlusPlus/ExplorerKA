@@ -125,10 +125,17 @@ namespace ExplorerKA
         private void PopulateFilesAndDirectories(DirectoryInfo directory)
         {
             lstViewDirsFiles.Items.Clear();
+            int iCount = 0;
 
             try
             {
-                if (trvDirs.SelectedNode != null) PopulateDirectories(directory, trvDirs.SelectedNode); //TODO: TEST TEST TEST
+                if (trvDirs.SelectedNode != null)
+                {
+                    TreeNode tn = trvDirs.SelectedNode;
+                    tn.Nodes.Clear(); // Da ne dupla mape
+                    PopulateDirectories(directory, trvDirs.SelectedNode); //TODO: TEST TEST TEST
+                    //trvDirs.SelectedNode = tn;
+                }
 
                 foreach (var subDirectory in directory.GetDirectories())
                 {
@@ -140,6 +147,7 @@ namespace ExplorerKA
                     imageList.Images.Add(icon);
                     item.ImageIndex = imageList.Images.Count - 1;
                     lstViewDirsFiles.Items.Add(item);
+                    iCount++;
                 }
 
                 foreach (var file in directory.GetFiles())
@@ -161,7 +169,8 @@ namespace ExplorerKA
             }
             catch (System.IO.IOException ex)
             {
-                MessageBox.Show(ex.Message);
+                //MessageBox.Show(ex.Message);
+                Debug.WriteLine("error 2 " + ex.Message);
             }
         }
 
@@ -171,9 +180,7 @@ namespace ExplorerKA
             selectedNode = e.Node;
             if (selectedNode != null && selectedNode.Tag is DirectoryInfo directory)
             {
-                txtFileName.Text = directory.FullName;
-                //PopulateFiles(directory);
-                //PopulateFilesAndDirectories(directory);
+                txtFileName.Text = directory.FullName;                
                 PopulateFilesAndDirectories(directory); //TODO: TEST TEST TEST
                 trvDirs.SelectedNode = selectedNode;
                 directoryInfo = new DirectoryInfo(directory.FullName); // to variable
@@ -259,7 +266,13 @@ namespace ExplorerKA
         {
             if (Directory.Exists(inputPath))
             {
-                System.IO.Compression.ZipFile.CreateFromDirectory(inputPath, outputPath);
+                // TODO: compress folders
+                //System.IO.Compression.ZipFile.CreateFromDirectory(inputPath, outputPath);
+                using (System.IO.Compression.ZipArchive archive = System.IO.Compression.ZipFile.Open(outputPath, ZipArchiveMode.Update))
+                {
+                    archive.CreateEntryFromFile(inputPath, Path.GetFileName(inputPath), CompressionLevel.SmallestSize);
+                    return;
+                }
             }
 
             else if (File.Exists(inputPath))
