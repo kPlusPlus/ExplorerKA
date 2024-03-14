@@ -79,6 +79,26 @@ namespace ExplorerKA
             }
         }
 
+
+
+
+        // Method to convert a directory path to a TreeNode
+        private TreeNode ConvertPathToTreeNode(string directoryPath)
+        {
+            // Check if the directory exists
+            if (!Directory.Exists(directoryPath))
+            {
+                return null;
+            }
+
+            // Create a TreeNode for the root directory
+            TreeNode rootNode = new TreeNode(Path.GetFileName(directoryPath));
+            //PopulateTreeNode(directoryPath, rootNode, "SearchDirectory");
+
+            return rootNode;
+        }
+
+
         private void PopulateDirectories(DirectoryInfo directory, TreeNode parentNode)
         {
             try
@@ -134,7 +154,7 @@ namespace ExplorerKA
                     TreeNode tn = trvDirs.SelectedNode;
                     tn.Nodes.Clear(); // Da ne dupla mape
                     PopulateDirectories(directory, trvDirs.SelectedNode); //TODO: TEST TEST TEST
-                    //trvDirs.SelectedNode = tn;
+                    trvDirs.SelectedNode = tn;
                 }
 
                 foreach (var subDirectory in directory.GetDirectories())
@@ -180,7 +200,7 @@ namespace ExplorerKA
             selectedNode = e.Node;
             if (selectedNode != null && selectedNode.Tag is DirectoryInfo directory)
             {
-                txtFileName.Text = directory.FullName;                
+                txtFileName.Text = directory.FullName;
                 PopulateFilesAndDirectories(directory); //TODO: TEST TEST TEST
                 trvDirs.SelectedNode = selectedNode;
                 directoryInfo = new DirectoryInfo(directory.FullName); // to variable
@@ -208,14 +228,43 @@ namespace ExplorerKA
                 DirectoryInfo di = selectedItem.Tag as DirectoryInfo;
 
                 if (di != null)
-                {
+                {                    
                     PopulateFilesAndDirectories(di);
                     PopulateDirectories(di, selectedNode);
                     txtFileName.Text = di.FullName;
                     directoryInfo = di;
+                    // Search for the directory "SubFolder2" within the TreeView
+                    TreeNode foundNode = FindDirectoryNode(trvDirs.Nodes, di.FullName);
+                    if (foundNode != null)
+                    {
+                        trvDirs.SelectedNode = foundNode;
+                        foundNode.EnsureVisible();
+                    }
+                    //trvDirs.SelectedNode = selectedNode;
                 }
             }
 
+        }
+        //TODO test test test
+        // Recursive method to search for a directory node within a TreeNodeCollection
+        private TreeNode FindDirectoryNode(TreeNodeCollection nodes, string directoryName)
+        {
+            foreach (TreeNode node in nodes)
+            {
+                if (node.Text.Equals(directoryName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return node; // Directory found
+                }
+
+                // Recursively search in the child nodes
+                TreeNode foundNode = FindDirectoryNode(node.Nodes, directoryName);
+                if (foundNode != null)
+                {
+                    return foundNode; // Directory found in child nodes
+                }
+            }
+
+            return null; // Directory not found
         }
 
         private void tsmOpen_Click(object sender, EventArgs e)
@@ -239,21 +288,21 @@ namespace ExplorerKA
         {
             if (lstViewDirsFiles.SelectedItems.Count > 0)
             {
-                for(int i=0;i<lstViewDirsFiles.SelectedItems.Count;i++)
+                for (int i = 0; i < lstViewDirsFiles.SelectedItems.Count; i++)
                 {
                     ListViewItem item = lstViewDirsFiles.SelectedItems[i];
                     object obj = item.Tag;
                     FileInfo fileInfo = obj as FileInfo;
                     if (fileInfo != null)
                     {
-                        string fileName = fileInfo.FullName.ToString();                        
+                        string fileName = fileInfo.FullName.ToString();
                         Compress(fileName, "TESLAAA.zip");
                     }
                     if (obj != null)
                     {
                         DirectoryInfo di = obj as DirectoryInfo;
-                        if(di != null)  Compress(di.FullName, "TESTAAA.zip");
-                     
+                        if (di != null) Compress(di.FullName, "TESTAAA.zip");
+
                     }
                 }
 
@@ -281,10 +330,10 @@ namespace ExplorerKA
                 {
                     using (System.IO.Compression.ZipArchive archive = System.IO.Compression.ZipFile.Open(outputPath, ZipArchiveMode.Update))
                     {
-                        archive.CreateEntryFromFile(inputPath, Path.GetFileName(inputPath),CompressionLevel.SmallestSize);
+                        archive.CreateEntryFromFile(inputPath, Path.GetFileName(inputPath), CompressionLevel.SmallestSize);
                         return;
                     }
-                }               
+                }
 
                 using (System.IO.Compression.ZipArchive archive = System.IO.Compression.ZipFile.Open(outputPath, ZipArchiveMode.Update))
                 {
@@ -329,7 +378,5 @@ namespace ExplorerKA
 
             zipStream.CloseEntry();
         }
-
-
     }
 }
