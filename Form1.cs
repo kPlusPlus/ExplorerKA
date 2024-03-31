@@ -153,8 +153,10 @@ namespace ExplorerKA
                 {
                     TreeNode tn = trvDirs.SelectedNode;
                     tn.Nodes.Clear(); // Da ne dupla mape
-                    PopulateDirectories(directory, trvDirs.SelectedNode); //TODO: TEST TEST TEST
+                    //PopulateDirectories(directory, trvDirs.SelectedNode); //TODO: TEST TEST TEST
+                    PopulateDirectories(directory, tn); //TODO: TEST TEST TEST
                     trvDirs.SelectedNode = tn;
+                    selectedNode = trvDirs.SelectedNode;
                 }
 
                 foreach (var subDirectory in directory.GetDirectories())
@@ -228,18 +230,22 @@ namespace ExplorerKA
                 DirectoryInfo di = selectedItem.Tag as DirectoryInfo;
 
                 if (di != null)
-                {                    
-                    PopulateFilesAndDirectories(di);
-                    PopulateDirectories(di, selectedNode);
+                {
+                    //PopulateFilesAndDirectories(di);TODO: TEST MAKNNUO bez ovoga ne ulazi u mape
+                    //PopulateDirectories(di, selectedNode);
+
                     txtFileName.Text = di.FullName;
                     directoryInfo = di;
-                    // Search for the directory "SubFolder2" within the TreeView
-                    TreeNode foundNode = FindDirectoryNode(trvDirs.Nodes, di.FullName);
+                    TreeNode foundNode = FindDirectoryNode(trvDirs.Nodes, txtFileName.Text);
                     if (foundNode != null)
                     {
                         trvDirs.SelectedNode = foundNode;
                         foundNode.EnsureVisible();
                     }
+
+                    // Search for the directory "SubFolder2" within the TreeView
+                    //TreeNode foundNode = FindDirectoryNode(trvDirs.Nodes, selectedItem.Tag.ToString());
+
                     //trvDirs.SelectedNode = selectedNode;
                 }
             }
@@ -251,10 +257,18 @@ namespace ExplorerKA
         {
             foreach (TreeNode node in nodes)
             {
-                if (node.Text.Equals(directoryName, StringComparison.OrdinalIgnoreCase))
+                Debug.WriteLine(node.FullPath.ToString() + " " + directoryName);
+                if (node.FullPath.Equals(directoryName, StringComparison.OrdinalIgnoreCase))
                 {
                     return node; // Directory found
                 }
+                string nodeFullPath = node.FullPath.Replace(@"//", @"/");
+                if (nodeFullPath == directoryName) 
+                { 
+                    return node; 
+                }
+
+
 
                 // Recursively search in the child nodes
                 TreeNode foundNode = FindDirectoryNode(node.Nodes, directoryName);
