@@ -230,55 +230,48 @@ namespace ExplorerKA
                 DirectoryInfo di = selectedItem.Tag as DirectoryInfo;
 
                 if (di != null)
-                {
-                    //PopulateFilesAndDirectories(di);TODO: TEST MAKNNUO bez ovoga ne ulazi u mape
-                    //PopulateDirectories(di, selectedNode);
+                {                    
+                    trvDirs.SelectedNode = selectedNode; //TEST TEST TEST
+                    selectedNode.Expand();
+
 
                     txtFileName.Text = di.FullName;
                     directoryInfo = di;
-                    TreeNode foundNode = FindDirectoryNode(trvDirs.Nodes, txtFileName.Text);
-                    if (foundNode != null)
-                    {
-                        trvDirs.SelectedNode = foundNode;
-                        foundNode.EnsureVisible();
+
+                    TreeNode foundNode = FindNode(trvDirs.Nodes, di.FullName);
+                    if (foundNode != null) 
+                    { 
+                        trvDirs.SelectedNode = foundNode; 
+                        foundNode.Expand();
                     }
 
-                    // Search for the directory "SubFolder2" within the TreeView
-                    //TreeNode foundNode = FindDirectoryNode(trvDirs.Nodes, selectedItem.Tag.ToString());
-
-                    //trvDirs.SelectedNode = selectedNode;
                 }
             }
 
         }
-        //TODO test test test
-        // Recursive method to search for a directory node within a TreeNodeCollection
-        private TreeNode FindDirectoryNode(TreeNodeCollection nodes, string directoryName)
+        
+
+        private TreeNode FindNode(TreeNodeCollection nodes, string text)
         {
+            string sText = text.Replace(@"\", "");
             foreach (TreeNode node in nodes)
             {
-                Debug.WriteLine(node.FullPath.ToString() + " " + directoryName);
-                if (node.FullPath.Equals(directoryName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return node; // Directory found
-                }
-                string nodeFullPath = node.FullPath.Replace(@"//", @"/");
-                if (nodeFullPath == directoryName) 
-                { 
-                    return node; 
-                }
+                string nodeFullPath = node.FullPath.Replace(@"\", @"");
+                if (nodeFullPath == sText)
+                    return node;
 
+                //if (Path.Equals(node.FullPath, Path.GetDirectoryName(text)))
+                //    return node;
 
-
-                // Recursively search in the child nodes
-                TreeNode foundNode = FindDirectoryNode(node.Nodes, directoryName);
+                TreeNode foundNode = FindNode(node.Nodes, text);
                 if (foundNode != null)
-                {
-                    return foundNode; // Directory found in child nodes
-                }
+                    return foundNode;
+                
+
+                Debug.WriteLine(node.FullPath + " " + text);
             }
 
-            return null; // Directory not found
+            return null;
         }
 
         private void tsmOpen_Click(object sender, EventArgs e)
